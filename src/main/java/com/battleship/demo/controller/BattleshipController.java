@@ -12,7 +12,7 @@ import java.util.Arrays;
 public class BattleshipController {
 
     /**
-     * Renders Battleship game page with an empty board.
+     * Renders Battleship game page with empty boards.
      *
      * @return the model and view for Battleship game page
      */
@@ -24,11 +24,11 @@ public class BattleshipController {
     @RequestMapping("/index")
     public ModelAndView battleship() {
         ModelAndView modelAndView = new ModelAndView("index");
-        String[][] enemy = new String[10][10];
-        String[][] board = new String[10][10];
-        Arrays.stream(enemy).forEach(row -> Arrays.fill(row, " "));
+        char[][] enemy = new char[10][10];
+        char[][] board = new char[10][10];
+        Arrays.stream(enemy).forEach(row -> Arrays.fill(row, ' '));
         modelAndView.addObject("enemy", enemy);
-        Arrays.stream(board).forEach(row -> Arrays.fill(row, " "));
+        Arrays.stream(board).forEach(row -> Arrays.fill(row, ' '));
         modelAndView.addObject("board", board);
         return modelAndView;
     }

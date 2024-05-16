@@ -10,6 +10,11 @@ public class Board {
 
     public Board(){
         squares = new Square[size][size];
+        for (int i = 0; i < size; i++) {
+            for (int j = 0; j < size; j++) {
+                squares[i][j] = Square.WATER;
+            }
+        }
         ships = new Ship[numberOfShips];
     }
 
@@ -68,75 +73,41 @@ public class Board {
     }
 
 
-    public void enemyDisplay() {
-        for(Square[] row : squares) {
-            for (Square val : row) {
-                if (val == Square.MISSED)
-                    System.out.print("o");
-                else if (val == Square.HIT)
-                    System.out.print("x");
-                else
-                    System.out.print(".");
-            }
-            System.out.println();
-        }
-    }
+    // public void enemyDisplay() {
+    //     for(Square[] row : squares) {
+    //         for (Square val : row) {
+    //             if (val == Square.MISSED)
+    //                 System.out.print("o");
+    //             else if (val == Square.HIT)
+    //                 System.out.print("x");
+    //             else
+    //                 System.out.print(".");
+    //         }
+    //         System.out.println();
+    //     }
+    // }
 
-    public void selfDisplay() {
-        for(Square[] row : squares) {
-            for (Square val : row) {
-                if (val == Square.MISSED)
-                    System.out.print("o");
-                else if (val == Square.HIT)
-                    System.out.print("x");
-                else if (val == Square.SHIP)
-                    System.out.print("z");
-                else
-                    System.out.print(".");
-            }
-            System.out.println();
-        }
-    }
+    // public void selfDisplay() {
+    //     for(Square[] row : squares) {
+    //         for (Square val : row) {
+    //             if (val == Square.MISSED)
+    //                 System.out.print("o");
+    //             else if (val == Square.HIT)
+    //                 System.out.print("x");
+    //             else if (val == Square.SHIP)
+    //                 System.out.print("z");
+    //             else
+    //                 System.out.print(".");
+    //         }
+    //         System.out.println();
+    //     }
+    // }
 
-    public String[][] getSquaresAsEnemy() {
+    public String[][] getSquares(boolean hideShips) {
         String[][] output = new String[10][10];
         for(int row = 0; row < 10; row++) {
             for(int col = 0; col < 10; col++) {
-                Square val = squares[row][col];
-                if (val == Square.MISSED)
-                    output[row][col] = "o";
-                else if (val == Square.HIT)
-                    output[row][col] = "x";
-                else
-                    output[row][col] = " ";
-            }
-        }
-        return output;
-    }
-
-    public String[][] getSquaresAsSelf() {
-        String[][] output = new String[10][10];
-        for(int row = 0; row < 10; row++) {
-            for(int col = 0; col < 10; col++) {
-                Square val = squares[row][col];
-                if (val == Square.MISSED)
-                    output[row][col] = "o";
-                else if (val == Square.HIT)
-                    output[row][col] = "x";
-                else if (val == Square.SHIP)
-                    output[row][col] = "z";
-                else
-                    output[row][col] = " ";
-            }
-        }
-        return output;
-    }
-
-    public char[][] getSquares(boolean hideShips) {
-        char[][] output = new char[10][10];
-        for(int row = 0; row < 10; row++) {
-            for(int col = 0; col < 10; col++) {
-                output[row][col] = squares[row][col].getSymbol(hideShips);
+                output[row][col] = ""+squares[row][col].getSymbol(hideShips);
             }
         }
         return output;

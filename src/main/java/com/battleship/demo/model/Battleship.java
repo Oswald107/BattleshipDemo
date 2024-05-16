@@ -8,7 +8,6 @@ import com.battleship.demo.enumeration.GameState;
 
 public class Battleship {
     private String gameId;
-    private String[][] board;
     private String player1;
     private String player2;
     private Board player1Board;
@@ -22,12 +21,6 @@ public class Battleship {
         this.player1 = player1;
         this.player2 = player2;
         this.turn = player1;
-        this.board = new String[10][10];
-        for (int i = 0; i < 10; i++) {
-            for (int j = 0; j < 10; j++) {
-                this.board[i][j] = " ";
-            }
-        }
         player1Board = new Board();
         player2Board = new Board();
         initializeBoards();
@@ -122,34 +115,16 @@ public class Battleship {
 
     public String[][] getBoard(String player) {
         if (player ==  player1) {
-            return player1Board.getSquaresAsSelf();
-        }
-        return player2Board.getSquaresAsSelf();
-    }
-
-    public String[][] getEnemyBoard(String player) {
-        if (player ==  player1) {
-            return player2Board.getSquaresAsEnemy();
-        }
-        return player1Board.getSquaresAsEnemy();
-    }
-
-    public char[][] getBoardForSelf(String player) {
-        if (player ==  player1) {
             return player1Board.getSquares(false);
         }
         return player2Board.getSquares(false);
     }
 
-    public char[][] getBoardForEnemy(String player) {
+    public String[][] getEnemyBoard(String player) {
         if (player ==  player1) {
             return player2Board.getSquares(true);
         }
         return player1Board.getSquares(true);
-    }
-
-    public void setBoard(String[][] board) {
-        this.board = board;
     }
 
     public String getPlayer1() {

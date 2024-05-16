@@ -29,6 +29,7 @@ public class BattleshipMessage implements Message {
         this.board = game.getBoard(sender);
         this.enemyBoard = game.getEnemyBoard(sender);
         this.gameState = game.getGameState();
+        this.sender = sender;
     }
 
     /**

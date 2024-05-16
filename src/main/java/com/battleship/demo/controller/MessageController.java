@@ -58,7 +58,7 @@ public class MessageController {
         headerAccessor.getSessionAttributes().put("gameId", game.getGameId());
         headerAccessor.getSessionAttributes().put("player", player);
 
-        BattleshipMessage gameMessage = gameToMessage(game, player);
+        BattleshipMessage gameMessage = new BattleshipMessage(game, player);
         gameMessage.setType("game.joined");
         return gameMessage;
     }
@@ -74,7 +74,7 @@ public class MessageController {
     public void leaveGame(@Payload PlayerMessage message) {
         Battleship game = BattleshipManager.leaveGame(message.getPlayer());
         if (game != null) {
-            BattleshipMessage gameMessage = gameToMessage(game, message.getPlayer());
+            BattleshipMessage gameMessage = new BattleshipMessage(game, message.getPlayer());
             gameMessage.setType("game.left");
             messagingTemplate.convertAndSend("/topic/game." + game.getGameId(), gameMessage);
         }
@@ -82,7 +82,7 @@ public class MessageController {
 
     /**
      * Handles a request from a client to make a move in a Battleship game.
-     * If the move is valid, the game state is updated and sent to all subscribers of the game's topic.
+     * If the move is valid, the game state is updated and sent to subscribers of the game based on required viewpoint.
      * If the game is over, a message is sent indicating the result of the game.
      *
      * @param message the message from the client containing the player's name, game ID, and move
@@ -122,7 +122,7 @@ public class MessageController {
             this.messagingTemplate.convertAndSend("/topic/game." + gameId + "." + game.getPlayer2(), gameStateMessage2);          
 
             if (game.isGameOver()) {
-                BattleshipMessage gameOverMessage = gameToMessage(game, game.getPlayer1());
+                BattleshipMessage gameOverMessage = new BattleshipMessage(game, game.getPlayer1());
                 gameOverMessage.setType("game.gameOver");
                 this.messagingTemplate.convertAndSend("/topic/game." + gameId, gameOverMessage);
                 BattleshipManager.removeGame(gameId);
@@ -142,7 +142,10 @@ public class MessageController {
                 if (game.getPlayer2() != null) {
                     game.setGameState(GameState.PLAYER2_WON);
                     game.setWinner(game.getPlayer2());
-                } else {
+
+                    BattleshipMessage gameMessage2 = new BattleshipMessage(game, game.getPlayer2());
+                    gameMessage2.setType("game.gameOver");
+                    messagingTemplate.convertAndSend("/topic/game." + gameId + "." + game.getPlayer2(), gameMessage2);
                     BattleshipManager.removeGame(gameId);
                 }
             } else if (game.getPlayer2() != null && game.getPlayer2().equals(player)) {
@@ -150,32 +153,15 @@ public class MessageController {
                 if (game.getPlayer1() != null) {
                     game.setGameState(GameState.PLAYER1_WON);
                     game.setWinner(game.getPlayer1());
-                } else {
-                    BattleshipManager.removeGame(gameId);
+                    
+                    BattleshipMessage gameMessage = new BattleshipMessage(game, game.getPlayer1());
+                    gameMessage.setType("game.gameOver");
+                    messagingTemplate.convertAndSend("/topic/game." + gameId + "." + game.getPlayer1(), gameMessage);
                 }
             }
-            BattleshipMessage gameMessage = gameToMessage(game, game.getPlayer1());
-            gameMessage.setType("game.gameOver");
-            messagingTemplate.convertAndSend("/topic/game." + gameId + "." + game.getPlayer1(), gameMessage);
 
-            BattleshipMessage gameMessage2 = gameToMessage(game, game.getPlayer2());
-            gameMessage2.setType("game.gameOver");
-            messagingTemplate.convertAndSend("/topic/game." + gameId + "." + game.getPlayer2(), gameMessage2);
             BattleshipManager.removeGame(gameId);
         }
     }
 
-    private BattleshipMessage gameToMessage(Battleship game, String player) {
-        BattleshipMessage message = new BattleshipMessage();
-        message.setGameId(game.getGameId());
-        message.setPlayer1(game.getPlayer1());
-        message.setPlayer2(game.getPlayer2());
-        message.setBoard(game.getBoard(player));
-        message.setEnemyBoard(game.getEnemyBoard(player));
-        message.setTurn(game.getTurn());
-        message.setGameState(game.getGameState());
-        message.setWinner(game.getWinner());
-        message.setSender(player);
-        return message;
-    }
 }
