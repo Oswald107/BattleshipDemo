@@ -1,7 +1,6 @@
 package com.battleship.demo.model;
 
 import java.util.UUID;
-import java.util.Objects;
 
 import com.battleship.demo.enumeration.Direction;
 import com.battleship.demo.enumeration.GameState;

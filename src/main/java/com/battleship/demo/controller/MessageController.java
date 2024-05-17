@@ -4,8 +4,10 @@ import com.battleship.demo.manager.BattleshipManager;
 import com.battleship.demo.model.dto.BattleshipMessage;
 import com.battleship.demo.model.dto.JoinMessage;
 import com.battleship.demo.model.dto.PlayerMessage;
+import com.battleship.demo.store.StoreService;
 import com.battleship.demo.model.Battleship;
 
+import com.battleship.demo.store.entities.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -28,11 +30,20 @@ public class MessageController {
      */
     @Autowired
     private SimpMessagingTemplate messagingTemplate;
+    
+    /**
+     * Access to db
+     */
+    @Autowired
+    private StoreService store;
 
     /**
      * Manager for the Battleship games.
      */
     private final BattleshipManager BattleshipManager = new BattleshipManager();
+
+
+    
 
     /**
      * Handles a request from a client to join a Battleship game.
@@ -45,15 +56,15 @@ public class MessageController {
     @MessageMapping("/game.join")
     @SendTo("/topic/game.state")
     public Object joinGame(@Payload JoinMessage message, SimpMessageHeaderAccessor headerAccessor) {
-        Battleship game = BattleshipManager.joinGame(message.getPlayer());
+        String player =  message.getPlayer();
+        User user = store.getOrCreateUser(player);
+        Battleship game = BattleshipManager.joinGame(player);
         if (game == null) {
             BattleshipMessage errorMessage = new BattleshipMessage();
             errorMessage.setType("error");
             errorMessage.setContent("Failed to join game");
             return errorMessage;
         }
-
-        String player = message.getPlayer();
 
         headerAccessor.getSessionAttributes().put("gameId", game.getGameId());
         headerAccessor.getSessionAttributes().put("player", player);
@@ -122,6 +133,10 @@ public class MessageController {
             this.messagingTemplate.convertAndSend("/topic/game." + gameId + "." + game.getPlayer2(), gameStateMessage2);          
 
             if (game.isGameOver()) {
+                String loser = game.getPlayer1() ==  game.getWinner() ? game.getPlayer2() : game.getPlayer1();
+                store.incWins(game.getWinner());
+                store.incLosses(loser);
+
                 BattleshipMessage gameOverMessage = new BattleshipMessage(game, game.getPlayer1());
                 gameOverMessage.setType("game.gameOver");
                 this.messagingTemplate.convertAndSend("/topic/game." + gameId, gameOverMessage);
@@ -159,7 +174,8 @@ public class MessageController {
                     messagingTemplate.convertAndSend("/topic/game." + gameId + "." + game.getPlayer1(), gameMessage);
                 }
             }
-
+            store.incWins(game.getWinner());
+            store.incLosses(player);
             BattleshipManager.removeGame(gameId);
         }
     }

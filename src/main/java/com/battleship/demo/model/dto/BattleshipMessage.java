@@ -13,6 +13,8 @@ public class BattleshipMessage implements Message {
     private String content;
     private String[][] board;
     private String[][] enemyBoard;
+    private String[] leaderBoard;
+    private String[] matchHistory;
     private int move;
     private GameState gameState;
     private String sender;
@@ -129,5 +131,21 @@ public class BattleshipMessage implements Message {
 
     public void setSender(String sender) {
         this.sender = sender;
+    }
+
+    public String[] getLeaderBoard() {
+        return leaderBoard;
+    }
+
+    public String[] getMatchHistory() {
+        return matchHistory;
+    }
+
+    public void setLeaderBoard(String[] leaderBoard) {
+        this.leaderBoard = leaderBoard;
+    }
+
+    public void setMatchHistory(String[] matchHistory) {
+        this.matchHistory = matchHistory;
     }
 }
