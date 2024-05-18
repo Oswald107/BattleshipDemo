@@ -17,8 +17,8 @@ public class BattleshipManager {
     }
 
     public synchronized Battleship joinGame(String player) {
-        if (games.values().stream().anyMatch(game -> game.getPlayer1().equals(player) || (game.getPlayer2() != null && game.getPlayer2().equals(player)))) {
-            return games.values().stream().filter(game -> game.getPlayer1().equals(player) || game.getPlayer2().equals(player)).findFirst().get();
+        if (games.values().stream().anyMatch(game -> player.equals(game.getPlayer1()) || (game.getPlayer2() != null && player.equals(game.getPlayer2())))) {
+            return games.values().stream().filter(game -> player.equals(game.getPlayer1()) || player.equals(game.getPlayer2())).findFirst().get();
         }
 
         for (Battleship game : games.values()) {
@@ -65,8 +65,8 @@ public class BattleshipManager {
     }
 
     public Battleship getGameByPlayer(String player) {
-        return games.values().stream().filter(game -> game.getPlayer1().equals(player) || (game.getPlayer2() != null &&
-                game.getPlayer2().equals(player))).findFirst().orElse(null);
+        return games.values().stream().filter(game -> player.equals(game.getPlayer1()) || (game.getPlayer2() != null &&
+                player.equals(game.getPlayer2()))).findFirst().orElse(null);
     }
 
     public void removeGame(String gameId) {

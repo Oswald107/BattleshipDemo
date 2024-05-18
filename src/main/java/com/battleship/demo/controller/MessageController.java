@@ -56,26 +56,26 @@ public class MessageController {
     @MessageMapping("/game.join")
     @SendTo("/topic/game.state")
     public Object joinGame(@Payload JoinMessage message, SimpMessageHeaderAccessor headerAccessor) {
-        System.out.println("A");
         String player =  message.getPlayer();
         User user = store.getOrCreateUser(player);
         Battleship game = BattleshipManager.joinGame(player);
-        System.out.println("B");
+        
         if (game == null) {
             BattleshipMessage errorMessage = new BattleshipMessage();
             errorMessage.setType("error");
             errorMessage.setContent("Failed to join game");
             return errorMessage;
         }
-        System.out.println("C");
+
         headerAccessor.getSessionAttributes().put("gameId", game.getGameId());
         headerAccessor.getSessionAttributes().put("player", player);
-        System.out.println("D");
+
         BattleshipMessage gameMessage = new BattleshipMessage(game, player);
         gameMessage.setLeaderBoard(store.getLeaderBoard());
         gameMessage.setMatchHistory(store.getMatchHistory(user.getId()));
         gameMessage.setType("game.joined");
-        System.out.println("E");
+
+
         return gameMessage;
     }
 
@@ -146,7 +146,13 @@ public class MessageController {
 
                 BattleshipMessage gameOverMessage = new BattleshipMessage(game, game.getPlayer1());
                 gameOverMessage.setType("game.gameOver");
-                this.messagingTemplate.convertAndSend("/topic/game." + gameId, gameOverMessage);
+                messagingTemplate.convertAndSend("/topic/game." + gameId + "." + game.getPlayer1(), gameOverMessage);
+                BattleshipManager.removeGame(gameId);
+
+
+                BattleshipMessage gameMessage2 = new BattleshipMessage(game, game.getPlayer2());
+                gameMessage2.setType("game.gameOver");
+                messagingTemplate.convertAndSend("/topic/game." + gameId + "." + game.getPlayer2(), gameOverMessage);
                 BattleshipManager.removeGame(gameId);
             }
         }
@@ -158,17 +164,21 @@ public class MessageController {
         String gameId = headerAccessor.getSessionAttributes().get("gameId").toString();
         String player = headerAccessor.getSessionAttributes().get("player").toString();
         Battleship game = BattleshipManager.getGame(gameId);
+
         if (game != null) {
-            if (game.getPlayer1().equals(player)) {
+            if (player.equals(game.getPlayer1())) {
+
                 String p1 = game.getPlayer1();
                 game.setPlayer1(null);
                 if (game.getPlayer2() != null) {
+
                     game.setGameState(GameState.PLAYER2_WON);
                     game.setWinner(game.getPlayer2());
                     
                     store.addMatch(p1, game.getPlayer2(), game.getWinner() == p1 ? 1 : 2);
                     store.incWins(game.getWinner());
                     store.incLosses(player);
+
                     BattleshipMessage gameMessage2 = new BattleshipMessage(game, game.getPlayer2());
                     gameMessage2.setType("game.gameOver");
                     messagingTemplate.convertAndSend("/topic/game." + gameId + "." + game.getPlayer2(), gameMessage2);
@@ -178,12 +188,14 @@ public class MessageController {
                 String p2 = game.getPlayer2();
                 game.setPlayer2(null);
                 if (game.getPlayer1() != null) {
+
                     game.setGameState(GameState.PLAYER1_WON);
                     game.setWinner(game.getPlayer1());
                     
                     store.addMatch(game.getPlayer1(), p2, game.getWinner() == game.getPlayer1() ? 1 : 2);
                     store.incWins(game.getWinner());
                     store.incLosses(player);
+
                     BattleshipMessage gameMessage = new BattleshipMessage(game, game.getPlayer1());
                     gameMessage.setType("game.gameOver");
                     messagingTemplate.convertAndSend("/topic/game." + gameId + "." + game.getPlayer1(), gameMessage);

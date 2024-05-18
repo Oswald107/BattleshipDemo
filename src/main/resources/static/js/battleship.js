@@ -152,8 +152,13 @@ const updateGame = (message) => {
     game = messageToGame(message);
     updateBoard(message.board, document.getElementById('board'));
     updateBoard(message.enemyBoard, document.getElementById('enemy'));
-    updateLeaderBoard(message.leaderBoard);
-    updateMatchHistory(message.matchHistory);
+    if (message.leaderBoard !== null) {
+        updateLeaderBoard(message.leaderBoard);
+    }
+    if (message.matchHistory !== null) {
+        updateMatchHistory(message.matchHistory);
+    }
+    
     document.getElementById("player1").innerHTML = game.player1;
     document.getElementById("player2").innerHTML = game.player2 || (game.winner ? '-' : 'Waiting for player 2...');
     document.getElementById("turn").innerHTML = game.turn;
