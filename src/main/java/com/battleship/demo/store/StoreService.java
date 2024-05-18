@@ -24,19 +24,22 @@ public class StoreService {
     GameMatchRepository gameMatchRepository;
 
     
-    public void addMatch(GameMatch game) {
-        gameMatchRepository.save(game);
+    public void addMatch(String player1, String player2, int winner1) {
+        GameMatch m = new GameMatch();
+        User u1 = userRepository.findByUsername(player1);
+        User u2 = userRepository.findByUsername(player2);
+        m.setPlayer1Id(u1.getId());
+        m.setPlayer2Id(u2.getId());
+        m.setWinner1(winner1);
+        gameMatchRepository.save(m);
     }
-    // public List<Games> getMatchHistory(int id) {
-    //     return gamesRepository.findByPlayer1IdOrPlayer2Id(id, id);
-    // }
 
     public String[] getMatchHistory(int id) {
         List<MatchHistoryProjection> matches = gameMatchRepository.findMatchHistory(id);
         String[] output = new String[matches.size()];
         for (int i = 0; i < matches.size(); i++) {
             MatchHistoryProjection match = matches.get(i);
-            output[i] = match.getPlayer1() + "\t" + match.getPlayer2() + "\t" + (match.getWinner1() ? match.getPlayer1() : match.getPlayer2());
+            output[i] = match.getPlayer1() + "\t" + match.getPlayer2() + "\t" + (match.getWinner1() == 1 ? match.getPlayer1() : match.getPlayer2());
         }
         return output;
     }

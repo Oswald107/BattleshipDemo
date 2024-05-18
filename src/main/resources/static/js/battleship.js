@@ -89,7 +89,9 @@ const messageToGame = (message) => {
         player1: message.player1,
         player2: message.player2,
         gameState: message.gameState,
-        winner: message.winner
+        winner: message.winner,
+        leaderBoard: message.leaderBoard,
+        matchHistory: message.matchHistory
     }
 }
 
@@ -150,10 +152,34 @@ const updateGame = (message) => {
     game = messageToGame(message);
     updateBoard(message.board, document.getElementById('board'));
     updateBoard(message.enemyBoard, document.getElementById('enemy'));
+    updateLeaderBoard(message.leaderBoard);
+    updateMatchHistory(message.matchHistory);
     document.getElementById("player1").innerHTML = game.player1;
     document.getElementById("player2").innerHTML = game.player2 || (game.winner ? '-' : 'Waiting for player 2...');
     document.getElementById("turn").innerHTML = game.turn;
     document.getElementById("winner").innerHTML = game.winner || '-';
+}
+
+const updateLeaderBoard = (leaderBoard) => {
+    let board = document.getElementById('Leaderboard');
+    board.innerHTML = '';
+    
+    leaderBoard.forEach(player => {
+        let listItem = document.createElement('li');
+        listItem.textContent = player;
+        board.appendChild(listItem);
+    });
+}
+
+const updateMatchHistory = (matchHistory) => {
+    let board = document.getElementById('Match History');
+    board.innerHTML = '';
+
+    matchHistory.forEach(player => {
+        let listItem = document.createElement('li');
+        listItem.textContent = player;
+        board.appendChild(listItem);
+    });
 }
 
 /**

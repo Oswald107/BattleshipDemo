@@ -25,7 +25,7 @@ public class GameMatch {
     private int player2Id;
 
     @Column(name="WINNER1")
-    private boolean winner1;
+    private int winner1;
 
     // getters and setters
 }
