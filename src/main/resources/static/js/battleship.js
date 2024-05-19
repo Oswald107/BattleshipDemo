@@ -53,6 +53,15 @@ const messagesTypes = {
             subscribed = true;
         }
         
+        sendMessage({
+            type: "game.join2",
+            player: message.sender
+        });
+    },
+    "game.joined2": (message) => {
+        if (game !== null && game.gameId !== message.gameId) return;
+        player = localStorage.getItem("playerName");
+        updateGame(message);
     },
     "game.move": (message) => {
         updateGame(message);

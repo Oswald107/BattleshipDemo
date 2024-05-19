@@ -2,6 +2,7 @@ package com.battleship.demo.model;
 
 import java.util.UUID;
 
+import com.battleship.demo.Exceptions.PlacementException;
 import com.battleship.demo.enumeration.Direction;
 import com.battleship.demo.enumeration.GameState;
 
@@ -22,11 +23,17 @@ public class Battleship {
         this.turn = player1;
         player1Board = new Board();
         player2Board = new Board();
-        initializeBoards();
+        // initializeBoards();
+        try {
+            player1Board.randomlyPlaceShips();
+            player2Board.randomlyPlaceShips();
+        } catch (PlacementException e) {
+
+        }
         gameState = GameState.WAITING_FOR_PLAYER;
     }
 
-    // TODO: replace this
+    // Here for testing purposes
     private void initializeBoards() {
         Location[] shipLoc = {
             new Location(0, 0),

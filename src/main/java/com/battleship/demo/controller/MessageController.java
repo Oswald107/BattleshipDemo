@@ -64,6 +64,7 @@ public class MessageController {
             BattleshipMessage errorMessage = new BattleshipMessage();
             errorMessage.setType("error");
             errorMessage.setContent("Failed to join game");
+            this.messagingTemplate.convertAndSend("/topic/game.state", errorMessage);
             return errorMessage;
         }
 
@@ -74,10 +75,48 @@ public class MessageController {
         gameMessage.setLeaderBoard(store.getLeaderBoard());
         gameMessage.setMatchHistory(store.getMatchHistory(user.getId()));
         gameMessage.setType("game.joined");
-
-
         return gameMessage;
+
+
+        // BattleshipMessage gameStateMessage = new BattleshipMessage(game, game.getPlayer1());
+        // gameStateMessage.setLeaderBoard(store.getLeaderBoard());
+        // gameStateMessage.setMatchHistory(store.getMatchHistory(user.getId()));
+        // gameStateMessage.setType("game.joined");
+        // this.messagingTemplate.convertAndSend("/topic/game." + game.getGameId() + "." + game.getPlayer1(), gameStateMessage);
+
+        // BattleshipMessage gameStateMessage2 = new BattleshipMessage(game, game.getPlayer2());
+        // gameStateMessage2.setLeaderBoard(store.getLeaderBoard());
+        // gameStateMessage2.setMatchHistory(store.getMatchHistory(user.getId()));
+        // gameStateMessage2.setType("game.joined");
+        // this.messagingTemplate.convertAndSend("/topic/game." + game.getGameId() + "." + game.getPlayer2(), gameStateMessage2);  
     }
+
+    @MessageMapping("/game.join2")
+    public void joinGame2(@Payload JoinMessage message, SimpMessageHeaderAccessor headerAccessor) {
+        String player =  message.getPlayer();
+        User user = store.getOrCreateUser(player);
+        Battleship game = BattleshipManager.getGameByPlayer(player);
+
+        headerAccessor.getSessionAttributes().put("gameId", game.getGameId());
+        headerAccessor.getSessionAttributes().put("player", player);
+
+
+        BattleshipMessage gameStateMessage = new BattleshipMessage(game, game.getPlayer1());
+        gameStateMessage.setLeaderBoard(store.getLeaderBoard());
+        gameStateMessage.setMatchHistory(store.getMatchHistory(user.getId()));
+        gameStateMessage.setType("game.joined2");
+        this.messagingTemplate.convertAndSend("/topic/game." + game.getGameId() + "." + game.getPlayer1(), gameStateMessage);
+
+        if (game.getPlayer2() != null) {
+            BattleshipMessage gameStateMessage2 = new BattleshipMessage(game, game.getPlayer2());
+        gameStateMessage2.setLeaderBoard(store.getLeaderBoard());
+        gameStateMessage2.setMatchHistory(store.getMatchHistory(user.getId()));
+        gameStateMessage2.setType("game.joined2");
+        this.messagingTemplate.convertAndSend("/topic/game." + game.getGameId() + "." + game.getPlayer2(), gameStateMessage2);  
+        }
+        
+    }
+
 
     /**
      * Handles a request from a client to leave a Battleship game.
