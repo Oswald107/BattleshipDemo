@@ -1,8 +1,26 @@
+.container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.5);
+    border-radius: 10px;
+    padding: 10px;
+}
+
+.no-bullets {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
 #enemy {
     display: flex;
     flex-direction: column;
     width: 600px;
     height: 600px;
+    background-color: rgb(108, 146, 158);
+    padding: 30px;
 }
 
 #board {
@@ -10,7 +28,8 @@
     flex-direction: column;
     width: 600px;
     height: 600px;
-    background-color: lightblue;
+    background-color: rgb(108, 146, 158);
+    padding: 30px;
 }
 
 .row {
@@ -33,25 +52,19 @@
     width: 100%;
     height: 100%;
     font-size: 50px;
-    background-color: antiquewhite;
+    background-color: rgb(50, 103, 184);
     border-radius: 10px;
 }
 
 .cell span {
     font-size: 50px;
-    background-color: antiquewhite;
+    background-color: rgb(50, 103, 184);
     border-radius: 10px;
     width: 98%;
     height: 98%;
 }
 
-.game-content {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 200vh;
-}
-.game-content .game-info {
+.game-info {
     display: flex;
     flex-direction: column;
     justify-content: left;
@@ -70,12 +83,6 @@
 
 body {
     background-color: white;
-}
-
-.card {
-    background-color: rgba(0, 0, 0, 0.5);
-    border-radius: 10px;
-    padding: 10px;
 }
 
 .cell-item {

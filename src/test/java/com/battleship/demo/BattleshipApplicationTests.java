@@ -12,11 +12,6 @@ import com.battleship.demo.model.Ship;
 class BattleshipApplicationTests {
 
 	@Test
-	void contextLoads() {
-		
-	}
-
-	@Test
 	public void testBoard() {
         Board b = new Board();
 

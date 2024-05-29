@@ -39,7 +39,7 @@ const messagesTypes = {
     "game.joined": (message) => {
         if (game !== null && game.gameId !== message.gameId) return;
         player = localStorage.getItem("playerName");
-        updateGame(message);
+        initializeGame(message);
 
         if (!subscribed) {
             const socket = new SockJS('/ws');
@@ -143,14 +143,14 @@ const connect = () => {
  */
 const loadGame = () => {
     const playerName = localStorage.getItem("playerName");
-    if (playerName) {
-        sendMessage({
-            type: "game.join",
-            player: playerName
-        });
-    } else {
-        joinGame();
-    }
+    // if (playerName) {
+    //     sendMessage({
+    //         type: "game.join",
+    //         player: playerName
+    //     });
+    // } else {
+    joinGame();
+    // }
 }
 
 /**
@@ -174,10 +174,30 @@ const updateGame = (message) => {
     document.getElementById("winner").innerHTML = game.winner || '-';
 }
 
-const updateLeaderBoard = (leaderBoard) => {
-    let board = document.getElementById('Leaderboard');
-    board.innerHTML = '';
+/**
+ * Sets up LeaderBoard, Match History, and  with the information received from the server.
+ * @param {Object} message - The message received from the server.
+ */
+const initializeGame = (message) => {
+    game = messageToGame(message);
+    if (message.leaderBoard !== null) {
+        updateLeaderBoard(message.leaderBoard);
+    }
+    if (message.matchHistory !== null) {
+        updateMatchHistory(message.matchHistory);
+    }
     
+    document.getElementById("player1").innerHTML = game.player1;
+    document.getElementById("player2").innerHTML = game.player2 || (game.winner ? '-' : 'Waiting for player 2...');
+    document.getElementById("turn").innerHTML = game.turn;
+    document.getElementById("winner").innerHTML = game.winner || '-';
+}
+
+
+const updateLeaderBoard = (leaderBoard) => {
+    let board = document.getElementById('leaderboard-data');
+    board.innerHTML = '';
+
     leaderBoard.forEach(player => {
         let listItem = document.createElement('li');
         listItem.textContent = player;
@@ -186,7 +206,10 @@ const updateLeaderBoard = (leaderBoard) => {
 }
 
 const updateMatchHistory = (matchHistory) => {
-    let board = document.getElementById('Match History');
+    let board = document.getElementById('match-history-data');
+    if(board.firstChild) {
+        return;
+    }
     board.innerHTML = '';
 
     matchHistory.forEach(player => {

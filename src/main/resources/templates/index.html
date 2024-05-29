@@ -7,49 +7,49 @@
 </head>
 <body>
 
-<div>
-    <h3>LeaderBoard</h3>
-    <h4>
-        Player Wins Losses
-    </h4>
-    <div id="Leaderboard"></div>
-</div>
-<div>
-    <h3>Match History</h3>
-    <h4>
-        Player1 Player2 Winner
-    </h>
-    <div id="Match History"></div>
-</div>
-
-<div class="game-content">
-    <div class="card">
-        <div id="enemy">
-            <div th:each="row, state : ${enemy}" th:class="${#strings.concat('row row-', state.index)}">
-                <div th:each="cell, state2 : ${row}" th:class="${#strings.concat('cell cell-', state2.index)}">
-                    <button th:if="${cell == ' '}" th:onclick="'makeMove(' + ${state2.index} + ')'"
-                            th:text="' '"></button>
-                    <span th:if="${cell != ' '}" th:text="${cell}"></span>
-                </div>
-            </div>
-        </div>
-        
-        <div class="game-info">
-            <div class="text-white">Player 1: <span id="player1" class="text-red"></span></div>
-            <div class="text-white">Player 2: <span id="player2" class="text-red"></span></div>
-            <div class="text-white">Turn: <span id="turn" class="text-red"></span></div>
-            <div class="text-white">Winner: <span id="winner" class="text-red">-</span></div>
-        </div>
-
-        <div id="board">
-            <div th:each="row, state : ${board}" th:class="${#strings.concat('row row-', state.index)}">
-                <div th:each="cell, state2 : ${row}" th:class="${#strings.concat('cell cell-', state2.index)}">
-                    <span th:if="${cell != ' '}" th:text="${cell}"></span>
-                </div>
+<div class="container">
+    <div class="leaderboard">
+        <h3>LeaderBoard</h3>
+        <h4>
+            Player Wins Losses
+        </h4>
+        <ul id="leaderboard-data" class="no-bullets"></ul>
+    </div>
+    
+    <div id="enemy">
+        <div th:each="row, state : ${enemy}" th:class="${#strings.concat('row row-', state.index)}">
+            <div th:each="cell, state2 : ${row}" th:class="${#strings.concat('cell cell-', state2.index)}">
+                <button th:if="${cell == ' '}" th:onclick="'makeMove(' + ${state2.index} + ')'"
+                        th:text="' '"></button>
+                <span th:if="${cell != ' '}" th:text="${cell}"></span>
             </div>
         </div>
     </div>
+    
+    <div class="game-info">
+        <div class="text-white">Player 1: <span id="player1" class="text-red"></span></div>
+        <div class="text-white">Player 2: <span id="player2" class="text-red"></span></div>
+        <div class="text-white">Turn: <span id="turn" class="text-red"></span></div>
+        <div class="text-white">Winner: <span id="winner" class="text-red">-</span></div>
+    </div>
+
+    <div id="board">
+        <div th:each="row, state : ${board}" th:class="${#strings.concat('row row-', state.index)}">
+            <div th:each="cell, state2 : ${row}" th:class="${#strings.concat('cell cell-', state2.index)}">
+                <span th:if="${cell != ' '}" th:text="${cell}"></span>
+            </div>
+        </div>
+    </div>
+    
+    <div class="match-history">
+        <h3>Match History</h3>
+        <h4>
+            Player1 Player2 Winner
+        </h4>
+        <ul id="match-history-data" class="no-bullets"></ul>
+    </div>
 </div>
+
 
 <script th:src="@{/js/lib/sockjs.min.js}"></script>
 <script th:src="@{/js/lib/stomp.min.js}"></script>
